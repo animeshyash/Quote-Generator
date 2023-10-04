@@ -1,23 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import { Main } from "./Components/Main";
+import { Navbar } from "./Components/Navbar";
+import { Spinner } from "./Components/Spinner";
 
 function App() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  async function fetchData() {
+    try {
+      setLoading(true);
+      const res = await fetch(`https://type.fit/api/quotes`);
+      const response = await res.json();
+      setData(response);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className=" w-screen h-screen overflow-y-hidden app_div">
+      <Navbar fetchData={fetchData} />
+      {loading ? <Spinner /> : data.length > 0 ? <Main data={data} /> : null}
     </div>
   );
 }
